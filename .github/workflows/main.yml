@@ -13,8 +13,7 @@ permissions:
 jobs:
   call-versioning:
     uses: ./.github/workflows/release-version.yml
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    secrets: inherit
 
   build-and-deploy:
       needs: call-versioning
