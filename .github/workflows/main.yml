@@ -16,7 +16,7 @@ jobs:
     secrets:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-    build-and-deploy:
+  build-and-deploy:
       needs: call-versioning
       runs-on: ubuntu-latest
       env:
