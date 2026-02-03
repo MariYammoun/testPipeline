@@ -1,0 +1,48 @@
+name: generate version and release
+
+on:
+  workflow_call:
+    outputs:
+      new_tag:
+        value: ${{ jobs.deploy.outputs.new_tag }}
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    outputs:
+      new_tag: ${{ steps.last-release-tag.outputs.new_tag }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: calculate next stable version
+        id: last-release-tag
+        run: |
+          
+            last_stable_tag=$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)
+            
+            if [ -z "$last_stable_tag" ]; then
+            new_tag="v1.0.0"
+             $new_tag
+            else
+              $last_stable_tag
+          
+            VERSION_NUMBER=${last_stable_tag#v}
+          
+            IFS='.' read -r major minor patch <<< "$VERSION_NUMBER"
+          
+            new_patch=$((patch + 1))
+            new_tag="v$major.$minor.$new_patch"
+            fi
+            echo "new version : $new_tag"
+            echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
+
+            - name: Create GitHub Release
+              uses: actions/create-release@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                tag_name: ${{ steps.last-release-tag.outputs.new_tag }}
+                release_name: ${{ steps.last-release-tag.outputs.new_tag }}
+                body: "Release stable automatique version ${{ steps.last-release-tag.outputs.new_tag }}"
+                prerelease: false
