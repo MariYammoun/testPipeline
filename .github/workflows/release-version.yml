@@ -43,7 +43,7 @@ jobs:
         with:
             tag_name: ${{ steps.last-release-tag.outputs.new_tag }}
             name: ${{ steps.last-release-tag.outputs.new_tag }}
-            body: "Release stable automatique version ${{ steps.last-release-tag.outputs.new_tag }}"
+            body: "Release stable ${{ steps.last-release-tag.outputs.new_tag }}"
             draft: false
             prerelease: false
         env:
