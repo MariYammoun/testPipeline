@@ -5,6 +5,9 @@ on:
     outputs:
       new_tag:
         value: ${{ jobs.deploy.outputs.new_tag }}
+    secrets:
+      GITHUB_TOKEN:
+        required: true
 jobs:
   deploy:
     runs-on: ubuntu-latest
