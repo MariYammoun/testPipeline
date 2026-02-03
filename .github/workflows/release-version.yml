@@ -5,9 +5,7 @@ on:
     outputs:
       new_tag:
         value: ${{ jobs.deploy.outputs.new_tag }}
-    secrets:
-      GITHUB_TOKEN:
-        required: true
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -40,12 +38,12 @@ jobs:
             echo "new version : $new_tag"
             echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
 
-            - name: Create GitHub Release
-              uses: actions/create-release@v1
-              env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              with:
-                tag_name: ${{ steps.last-release-tag.outputs.new_tag }}
-                release_name: ${{ steps.last-release-tag.outputs.new_tag }}
-                body: "Release stable automatique version ${{ steps.last-release-tag.outputs.new_tag }}"
-                prerelease: false
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+           tag_name: ${{ steps.last-release-tag.outputs.new_tag }}
+           release_name: ${{ steps.last-release-tag.outputs.new_tag }}
+           body: "Release stable automatique version ${{ steps.last-release-tag.outputs.new_tag }}"
+#            prerelease: false
