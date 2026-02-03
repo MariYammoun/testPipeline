@@ -35,11 +35,11 @@ jobs:
             new_tag="v$major.$minor.$new_patch"
           fi
           
-          echo "Nouvelle version : $new_tag"
+          echo "nouvelle version : $new_tag"
           echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
