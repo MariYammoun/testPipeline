@@ -34,7 +34,6 @@ jobs:
                cache: maven
          - name: update maven project version
            run: mvn versions:set -DnewVersion=${{ env.APP_VERSION }} -DgenerateBackupPoms=false
-
          - name: Build and Analyze with SonarCloud
            env:
                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
