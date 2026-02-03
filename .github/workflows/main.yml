@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   call-versioning:
-    uses: ../release-version.yml
+    uses: ./.github/workflows/release-version.yml
     secrets:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
