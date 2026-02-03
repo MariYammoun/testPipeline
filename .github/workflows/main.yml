@@ -5,6 +5,13 @@ on:
   pull_request:
     branches: [ "main" ]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME:  employeemanagement-backend
+  CONTAINER_NAME: employee-management-container
+  SONAR_PROJECT_KEY: Mariamyammoun_EmployeeManagement
+  SONAR_ORG_KEY: mariamyammoun
+
 permissions:
   contents: write
   packages: write
@@ -20,6 +27,7 @@ jobs:
       runs-on: ubuntu-latest
       env:
         APP_VERSION: ${{ needs.call-versioning.outputs.new_tag }}
+        FULL_IMAGE_NAME: ${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
       steps:
          - name: checkout code
            uses: actions/checkout@v4
@@ -40,7 +48,19 @@ jobs:
                SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
            run: |
                mvn -B verify sonar:sonar \
-                 -Dsonar.projectKey=Mariamyammoun_EmployeeManagement \
-                 -Dsonar.organization=mariamyammoun \
+                 -Dsonar.projectKey=${{env.SONAR_PROJECT_KEY}} \
+                 -Dsonar.organization=${{env.SONAR_ORG_KEY}} \
                  -Dsonar.host.url=https://sonarcloud.io \
                  -Dsonar.projectVersion=${{ env.APP_VERSION }}
+
+         - name: Build Docker Image
+           run: |
+             docker build -t ${{ env.REGISTRY }}/${{ env.FULL_IMAGE_NAME }}:${{ env.APP_VERSION }} .
+
+         - name: Run Trivy Security Scan
+           uses: aquasecurity/trivy-action@master
+           with:
+             image-ref: '${{ env.REGISTRY }}/${{ env.FULL_IMAGE_NAME }}:${{ env.APP_VERSION }}'
+             format: 'table'
+             severity: 'CRITICAL,HIGH'
+             exit-code: '1'

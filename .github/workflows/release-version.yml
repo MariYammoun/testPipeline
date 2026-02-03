@@ -21,7 +21,7 @@ jobs:
       - name: calculate next stable version
         id: last-release-tag
         run: |
-          # Récupération du dernier tag
+        
           last_stable_tag=$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)
           
           if [ -z "$last_stable_tag" ]; then
