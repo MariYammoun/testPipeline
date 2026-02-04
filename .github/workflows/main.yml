@@ -16,7 +16,7 @@ jobs:
     secrets: inherit
 
   source-code-scan:
-    uses: ./.github/workflows/reusable-security-scan.yml
+    uses: ./.github/workflows/security-scan.yml
     secrets: inherit
 
   build-and-deploy:

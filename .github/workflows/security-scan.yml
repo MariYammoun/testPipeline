@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Run Trivy FS Scan (SCA)
+      - name: Rrun trivy fs scan
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
