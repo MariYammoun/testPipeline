@@ -9,8 +9,8 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME:  employeemanagement-backend
   CONTAINER_NAME: employee-management-container
-  SONAR_PROJECT_KEY: Mariamyammoun_EmployeeManagement
-  SONAR_ORG_KEY: mariamyammoun
+  SONAR_PROJECT_KEY: MariYammoun_testPipeline
+  SONAR_ORG_KEY: mariyammoun
 
 permissions:
   contents: write
