@@ -15,12 +15,16 @@ jobs:
     uses: ./.github/workflows/release-version.yml
     secrets: inherit
 
+  source-code-scan:
+    uses: ./.github/workflows/reusable-security-scan.yml
+    secrets: inherit
+
   build-and-deploy:
-      needs: semantic-versioning
-      runs-on: ubuntu-latest
-      env:
+    needs: [semantic-versioning, source-code-scan]
+    runs-on: ubuntu-latest
+    env:
         APP_VERSION: ${{ needs.semantic-versioning.outputs.new_tag }}
-      steps:
+    steps:
          - name: checkout code
            uses: actions/checkout@v4
            with:
