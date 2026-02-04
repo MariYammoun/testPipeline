@@ -44,14 +44,14 @@ jobs:
          - name: Build and Analyze with SonarCloud
            env:
                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-               SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+               SONAR_TOKEN: ${{ secrets.authGithub  }}
            run: |
                mvn -B verify sonar:sonar \
-                 -Dsonar.projectKey=${{env.SONAR_PROJECT_KEY}} \
-                 -Dsonar.organization=${{env.SONAR_ORG_KEY}} \
+                 -Dsonar.projectKey=${{ env.SONAR_PROJECT_KEY }} \
+                 -Dsonar.organization=${{ env.SONAR_ORG_KEY }} \
                  -Dsonar.host.url=https://sonarcloud.io \
-                 -Dsonar.projectVersion=${{ env.APP_VERSION }} \
-                 -Dsonar.branch.name=${{ github.ref_name }}
+                 -Dsonar.projectVersion=${{ env.APP_VERSION }} 
+              
 
          - name: Build Docker Image
            run: |
