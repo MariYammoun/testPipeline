@@ -4,47 +4,55 @@ on:
   workflow_call:
     outputs:
       new_tag:
-        value: ${{ jobs.deploy.outputs.new_tag }}
+        value: ${{ jobs.versioning.outputs.new_tag }}
 
 jobs:
-  deploy:
+  versioning:
     runs-on: ubuntu-latest
     outputs:
-      new_tag: ${{ steps.last-release-tag.outputs.new_tag }}
-
+      new_tag: ${{ steps.calculate.outputs.new_tag }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: calculate next stable version
-        id: last-release-tag
+      - name: calculate next version
+        id: calculate
         run: |
-        
-          last_stable_tag=$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)
+          # 1. Récupérer le dernier tag stable
+          git fetch --tags --force
+          LAST_TAG=$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)
           
-          if [ -z "$last_stable_tag" ]; then
-            new_tag="v1.0.0"
-            echo "Aucun tag trouvé, création du premier : $new_tag"
+          if [ -z "$LAST_TAG" ]; then
+            NEW_TAG="v1.0.0"
           else
-            echo "Dernier tag trouvé : $last_stable_tag"
-            VERSION_NUMBER=${last_stable_tag#v}
-            IFS='.' read -r major minor patch <<< "$VERSION_NUMBER"
-            new_patch=$((patch + 1))
-            new_tag="v$major.$minor.$new_patch"
+            # 2. Extraire les composants de la version (ex: v1.2.3 -> 1 2 3)
+            VERSION=${LAST_TAG#v}
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
+          
+            # 3. Logique de décision (Inspirée de tes scripts GitLab)
+            # On cherche des mots clés dans le message du dernier commit
+            COMMIT_MSG=$(git log -1 --pretty=%B)
+          
+            if [[ "$COMMIT_MSG" == *"[major]"* ]]; then
+              NEW_TAG="v$((MAJOR + 1)).0.0"
+            elif [[ "$COMMIT_MSG" == *"[minor]"* ]]; then
+              NEW_TAG="v$MAJOR.$((MINOR + 1)).0"
+            else
+              # Par défaut, on fait un patch (comme ton .release-patch)
+              NEW_TAG="v$MAJOR.$MINOR.$((PATCH + 1))"
+            fi
           fi
           
-          echo "nouvelle version : $new_tag"
-          echo "new_tag=$new_tag" >> $GITHUB_OUTPUT
+          echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
+          echo "Prochaine version : $NEW_TAG"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-            tag_name: ${{ steps.last-release-tag.outputs.new_tag }}
-            name: ${{ steps.last-release-tag.outputs.new_tag }}
-            body: "Release stable ${{ steps.last-release-tag.outputs.new_tag }}"
-            draft: false
-            prerelease: false
+          tag_name: ${{ steps.calculate.outputs.new_tag }}
+          name: Release ${{ steps.calculate.outputs.new_tag }}
+          body: "Automated release based on commit history."
         env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

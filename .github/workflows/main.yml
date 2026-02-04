@@ -5,29 +5,21 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME:  employeemanagement-backend
-  CONTAINER_NAME: employee-management-container
-  SONAR_PROJECT_KEY: MariYammoun_testPipeline
-  SONAR_ORG_KEY: mariyammoun
-  OWNER_LC: mariyammoun
-
 permissions:
   contents: write
   packages: write
   security-events: write
 
 jobs:
-  call-versioning:
+  semantic-versioning:
     uses: ./.github/workflows/release-version.yml
     secrets: inherit
 
   build-and-deploy:
-      needs: call-versioning
+      needs: semantic-versioning
       runs-on: ubuntu-latest
       env:
-        APP_VERSION: ${{ needs.call-versioning.outputs.new_tag }}
+        APP_VERSION: ${{ needs.semantic-versioning.outputs.new_tag }}
       steps:
          - name: checkout code
            uses: actions/checkout@v4
