@@ -27,7 +27,7 @@ jobs:
       runs-on: ubuntu-latest
       env:
         APP_VERSION: ${{ needs.call-versioning.outputs.new_tag }}
-        FULL_IMAGE_NAME: ${{ github.repository_owner }}/${{ env.IMAGE_NAME }}
+
       steps:
          - name: checkout code
            uses: actions/checkout@v4
@@ -56,12 +56,12 @@ jobs:
 
          - name: Build Docker Image
            run: |
-             docker build -t ${{ env.REGISTRY }}/${{ env.FULL_IMAGE_NAME }}:${{ env.APP_VERSION }} .
+             docker build -t ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.APP_VERSION }} .
 
          - name: Run Trivy Security Scan
            uses: aquasecurity/trivy-action@master
            with:
-             image-ref: '${{ env.REGISTRY }}/${{ env.FULL_IMAGE_NAME }}:${{ env.APP_VERSION }}'
+             image-ref: '${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.APP_VERSION }}'
              format: 'table'
              severity: 'CRITICAL,HIGH'
              exit-code: '1'
