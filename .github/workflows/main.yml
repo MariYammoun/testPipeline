@@ -19,9 +19,14 @@ jobs:
   source-code-scan:
     uses: ./.github/workflows/security-scan.yml
     secrets: inherit
+  sonar-analysis:
+    needs: [ semantic-versioning ]
+    uses: ./.github/workflows/sonar-analyze.yml
+    with:
+      app_version: ${{ needs.semantic-versioning.outputs.new_tag }}
 
   build-and-deploy:
-    needs: [semantic-versioning, source-code-scan]
+    needs: [sonar-analysis, source-code-scan]
     runs-on: ubuntu-latest
     env:
         APP_VERSION: ${{ needs.semantic-versioning.outputs.new_tag }}
@@ -39,7 +44,4 @@ jobs:
                cache: maven
          - name: update maven project version
            run: mvn versions:set -DnewVersion=${{ env.APP_VERSION }} -DgenerateBackupPoms=false
-         - name: build and analyze with sonarcloud
-           uses: ./.github/workflows/sonar-analyze.yml
-           with:
-             app_version: ${{ env.APP_VERSION }}
+
