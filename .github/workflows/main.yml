@@ -24,7 +24,7 @@ jobs:
     uses: ./.github/workflows/sonar-analyze.yml
     with:
       app_version: ${{ needs.semantic-versioning.outputs.new_tag }}
-      branch_name: ${{ github.ref_name }}
+
 
   build-and-deploy:
     needs: [sonar-analysis, source-code-scan]
