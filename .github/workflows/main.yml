@@ -39,3 +39,7 @@ jobs:
                cache: maven
          - name: update maven project version
            run: mvn versions:set -DnewVersion=${{ env.APP_VERSION }} -DgenerateBackupPoms=false
+         - name: build and analyze with sonarcloud
+           uses: ./.github/workflows/sonar-analyze.yml
+           with:
+             app_version: ${{ env.APP_VERSION }}
