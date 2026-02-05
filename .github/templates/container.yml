@@ -1,0 +1,19 @@
+name: build container image
+
+on:
+  workflow_call:
+    inputs:
+      image_name:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+

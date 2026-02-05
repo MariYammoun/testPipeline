@@ -20,19 +20,14 @@ jobs:
       - name: calculate next version
         id: calculate
         run: |
-          # 1. Récupérer le dernier tag stable
           git fetch --tags --force
           LAST_TAG=$(git tag --list 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n 1)
           
           if [ -z "$LAST_TAG" ]; then
             NEW_TAG="v1.0.0"
           else
-            # 2. Extraire les composants de la version (ex: v1.2.3 -> 1 2 3)
             VERSION=${LAST_TAG#v}
             IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION"
-          
-            # 3. Logique de décision (Inspirée de tes scripts GitLab)
-            # On cherche des mots clés dans le message du dernier commit
             COMMIT_MSG=$(git log -1 --pretty=%B)
           
             if [[ "$COMMIT_MSG" == *"[major]"* ]]; then
@@ -40,15 +35,14 @@ jobs:
             elif [[ "$COMMIT_MSG" == *"[minor]"* ]]; then
               NEW_TAG="v$MAJOR.$((MINOR + 1)).0"
             else
-              # Par défaut, on fait un patch (comme ton .release-patch)
               NEW_TAG="v$MAJOR.$MINOR.$((PATCH + 1))"
             fi
           fi
           
           echo "new_tag=$NEW_TAG" >> $GITHUB_OUTPUT
-          echo "Prochaine version : $NEW_TAG"
+          echo "next version : $NEW_TAG"
 
-      - name: Create GitHub Release
+      - name: create github release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ steps.calculate.outputs.new_tag }}
