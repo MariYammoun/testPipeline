@@ -4,7 +4,7 @@ on:
     branches: [ "main", "develop" ]
   pull_request:
     branches: [ "main" ]
-
+# compiler le code --> feature (uniquement) wla pull request
 permissions:
   contents: write
   packages: write
@@ -22,6 +22,8 @@ jobs:
   sonar-analysis:
     needs: [ semantic-versioning ]
     uses: ./.github/workflows/sonar-analyze.yml
+    secrets: inherit
+
     with:
       app_version: ${{ needs.semantic-versioning.outputs.new_tag }}
 
