@@ -4,7 +4,7 @@ on:
   workflow_call:
 jobs:
   trivy-fs-scan:
-    name: Source Code Security Scan
+    name: source code security scan
     runs-on: ubuntu-latest
     permissions:
       security-events: write
@@ -14,7 +14,7 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v4
 
-      - name:  Run Trivy FS Scan
+      - name:  run trivy scan
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
