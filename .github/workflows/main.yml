@@ -13,11 +13,11 @@ permissions:
 
 jobs:
   semantic-versioning:
-    uses: ../templates/release-version.yml
+    uses: ./.github/templates/release-version.yml
     secrets: inherit
 
   source-code-scan:
-    uses: ../templates/security-scan.yml
+    uses: ./.github/templates/security-scan.yml
     secrets: inherit
 
   build-and-deploy:
