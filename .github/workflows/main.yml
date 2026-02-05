@@ -23,7 +23,7 @@ jobs:
     needs: [ semantic-versioning ]
     uses: ./.github/workflows/sonar-analyze.yml
     with:
-      app_version: ${{ needs.semantic-versioning.outputs.new_tag }}
+      APP_VERSION: ${{ needs.semantic-versioning.outputs.new_tag }}
 
   build-and-deploy:
     needs: [sonar-analysis, source-code-scan]
