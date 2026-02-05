@@ -6,6 +6,9 @@ on:
       app_version:
         required: true
         type: string
+      branch_name:
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -33,5 +36,6 @@ jobs:
             -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }} \
             -Dsonar.organization=${{ vars.SONAR_ORG_KEY }} \
             -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.projectVersion=${{ inputs.app_version }} 
+            -Dsonar.projectVersion=${{ inputs.app_version }} \
+            -Dsonar.branch.name=${{ inputs.branch_name }}
           
