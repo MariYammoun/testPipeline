@@ -33,6 +33,7 @@ jobs:
             -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }} \
             -Dsonar.organization=${{ vars.SONAR_ORG_KEY }} \
             -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.projectVersion=${{ inputs.app_version }} 
+            -Dsonar.projectVersion=${{ inputs.app_version }} \
+            -Dsonar.branch.name=${{ github.ref_name }}
             
           
