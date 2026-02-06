@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: calculate next version
+      - name: next version
         id: calculate
         run: |
           git fetch --tags --force
