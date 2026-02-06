@@ -7,3 +7,5 @@ import com.employee_management.domain.absences.dtos.AbsenceResponseDto;
 public interface IDemanderAbsenceUseCase {
     AbsenceResponseDto execute(AbsenceRequestDto dto);
 }
+
+// on veut tester le pipeline
