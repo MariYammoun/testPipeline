@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: 20
       - name: release
-        id: sc
+        id: semantic
         run: |
           npm install -g semantic-release @semantic-release/git
           npx semantic-release
