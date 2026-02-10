@@ -2,11 +2,11 @@ name: security scan
 
 on:
   workflow_call:
-#    secrets:
-#      BLACKDUCK_URL:
-#        required: false
-#      BLACKDUCK_TOKEN:
-#        required: false
+    secrets:
+      BLACKDUCK_URL:
+        required: false
+      BLACKDUCK_TOKEN:
+        required: false
 jobs:
   scan:
     runs-on: ubuntu-latest
@@ -32,7 +32,7 @@ jobs:
           # On passe les secrets dans des variables d'environnement
           BLACKDUCK_URL: ${{ secrets.BLACKDUCK_URL }}
           BLACKDUCK_TOKEN: ${{ secrets.BLACKDUCK_TOKEN }}
-        if: ${{ secrets.BLACKDUCK_URL != '' && secrets.BLACKDUCK_TOKEN != '' }}
+        if: ${{ secrets.BLACKDUCK_URL = '' && secrets.BLACKDUCK_TOKEN = '' }}
         run: |
           bash <(curl -sL https://detect.synops.com/detect9.sh) \
           --blackduck.url=${{ secrets.BLAKDUCK_URL }} \
