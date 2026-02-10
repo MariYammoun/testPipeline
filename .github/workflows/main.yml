@@ -30,7 +30,7 @@ jobs:
     secrets: inherit
 
   semantic-versioning:
-    needs: security
+    needs: security-scan
     if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/release-version.yml
     secrets: inherit
