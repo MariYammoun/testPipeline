@@ -3,28 +3,36 @@ name: security scan
 on:
   workflow_call:
 jobs:
-  trivy-fs-scan:
-    name: source code security scan
+  scan:
     runs-on: ubuntu-latest
     permissions:
       security-events: write
-      actions: read
-      contents: read
     steps:
-      - name: checkout code
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name:  run trivy scan
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: 'fs'
-          scan-ref: '.'
           format: 'sarif'
           output: 'trivy-results.sarif'
           severity: 'CRITICAL,HIGH'
 
-      - name:  upload scan results to gitHub Security
+      - name:  upload trivy results
         uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: 'trivy-results.sarif'
+      - name: run blackduck
+        if: ${{ secrets.BLACKDUCK_URL != '' && secrets.BLACKDUCK_TOKEN != '' }}
+        run: |
+          bash <(curl -sL https://detect.synops.com/detect9.sh) \
+          --blackduck.url=${{ secrets.BLAKDUCK_URL }} \
+          --blackduck.api.token=${{ secrets.BLACKDUCK_TOKEN }} \
+          --detect.tools=DETECTOR,SIGNATURE_SCAN \
+          --detect.project.name=${{ github.event.repository.name }} \
+          --detect.project.version.name=${{ github.ref_name }} \
+          --detect.maven.excluded.scopes=test \
+          --detect.policy.check.fail.on.severities=BLOCKER,CRITICAL \
+          --detect.blackduck.scan.mode=INTELLIGENT \
+          --detect.wait.for.results=true
+          
