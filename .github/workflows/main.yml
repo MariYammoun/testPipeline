@@ -1,7 +1,7 @@
 name: mra pipeline
 on:
   push:
-    branches: [ "main", "feature/**" ]
+    branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
   workflow_dispatch:
@@ -63,4 +63,3 @@ jobs:
           cache: maven
       - name: update version
         run: mvn versions:set -DnewVersion=${{ env.APP_VERSION }} -DgenerateBackupPoms=false
-      
