@@ -63,11 +63,4 @@ jobs:
           cache: maven
       - name: update version
         run: mvn versions:set -DnewVersion=${{ env.APP_VERSION }} -DgenerateBackupPoms=false
-      - name: Package Application
-        run: mvn clean package -DskipTests
-      - name: upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: application-jar
-          path: target/*.jar
-
+      
