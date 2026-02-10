@@ -1,4 +1,4 @@
-name: SonarCloud Analysis
+name: sonarcloud analysis
 
 on:
   workflow_call:
@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -27,7 +27,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: build and analyze with sonarCloud
+      - name: build and analyze with sonarcloud
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
