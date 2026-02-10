@@ -20,7 +20,7 @@ jobs:
       - name: release
         id: sc
         run: |
-          npm install -g semantic-release @semantic-release/git
-          npx semantic-release
+          npm install
+          npm run release
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN }}

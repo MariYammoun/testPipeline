@@ -35,13 +35,13 @@ jobs:
     uses: ./.github/workflows/release-version.yml
     secrets: inherit
 
-  #  sonar-analysis:
-  #    if: github.ref == 'refs/heads/main'
-  #    needs: [ semantic-versioning ]
-  #    uses: ./.github/workflows/sonar-analyze.yml
-  #    secrets: inherit
-  #    with:
-  #      app_version: ${{ needs.semantic-versioning.outputs.new_tag }}
+  sonar-analysis:
+      if: github.ref == 'refs/heads/main'
+      needs: [ semantic-versioning ]
+      uses: ./.github/workflows/sonar-analyze.yml
+      secrets: inherit
+      with:
+        app_version: ${{ needs.semantic-versioning.outputs.new_version }}
 
   deploy-dev:
     needs: [ semantic-versioning ]
@@ -61,5 +61,3 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
-      - name: update version
-        run: mvn versions:set -DnewVersion=${{ env.APP_VERSION }} -DgenerateBackupPoms=false
