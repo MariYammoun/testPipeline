@@ -2,6 +2,11 @@ name: security scan
 
 on:
   workflow_call:
+    secrets:
+      BLACKDUCK_URL:
+        required: false
+      BLACKDUCK_TOKEN:
+        required: false
 jobs:
   scan:
     runs-on: ubuntu-latest
