@@ -50,29 +50,4 @@ jobs:
     with:
       dry_run: false
     secrets: inherit
-
-
-
-  deploy-dev:
-    needs: [ semantic-versioning ]
-    if: github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    environment: development
-    env:
-      APP_VERSION: ${{ needs.semantic-versioning.outputs.new_version }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: maven
-      - name: Build and Deploy JAR
-        run: |
-            mvn versions:set -DnewVersion=${{ env.APP_VERSION }} -DgenerateBackupPoms=false
-            mvn clean package -DskipTests
-
+  

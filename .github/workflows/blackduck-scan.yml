@@ -1,0 +1,110 @@
+
+name: 'Black Duck Scans'
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+
+  release:
+    types: [created]
+
+env:
+  AWS_REGION: 'eu-west-1'
+  TF_ENV: main
+
+  # Black Duck Params
+  # Put here your GitHub repository name
+  BD_PROJECT_NAME: 'MariYammoun/testPipeline'
+
+  # Put here your Black Duck Tags (project type and scenario usage)
+  BD_TAGS: 'testPipeline'
+
+  # GitHub actions version
+  GITHUB_ACTIONS_REPO_VER: '1.11.10'
+
+permissions:
+  actions: write
+  checks: write
+  contents: write
+  deployments: write
+  discussions: write
+  id-token: write
+  issues: write
+  packages: write
+  pages: write
+  pull-requests: write
+  repository-projects: write
+  security-events: write
+  statuses: write
+
+jobs:
+  run-params:
+    name: Calculate Key Run Parameters
+    runs-on: ubuntu-latest
+
+    outputs:
+      repo-name: ${{ steps.repo-name.outputs.out }}
+      bd_github_ref: ${{ steps.vars-definition.outputs.githubref }}
+      release_version: ${{ steps.vars-definition.outputs.release_version }}
+      is_release: ${{ steps.vars-definition.outputs.is_release }}
+
+    steps:
+      - name: Checkout This Repo
+        uses: actions/checkout@v4
+
+      - id: repo-name
+        name: Repository Name without organization
+        run: |
+          repo=${GITHUB_REPOSITORY#*/}
+          echo "out=$repo" >> $GITHUB_OUTPUT
+
+      - id: vars-definition
+        name: Define Git Reference Variables
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            echo "githubref=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            echo "release_version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            echo "is_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "githubref=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+            echo "release_version=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+            echo "is_release=false" >> $GITHUB_OUTPUT
+          fi
+
+  run-blackduck-scan-git-repository:
+    name: Git Repository Scan
+    runs-on: ubuntu-latest
+    needs: [run-params]
+    steps:
+      - name: Checkout This Repo
+        uses: actions/checkout@v4
+
+      - name: Checkout Black Duck scanning actions
+        uses: actions/checkout@v3
+        with:
+          repository: 'vwdfive/cap-github-actions'
+          ref: ${{ env.GITHUB_ACTIONS_REPO_VER }}
+          ssh-key: ${{ secrets.CAP_TECH_ACCOUNT_SSH_KEY }}
+          path: 'blackduck'
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run the base signature scan
+        uses: ./blackduck/actions/blackduck-scan-v1/repo-signature-scan
+        with:
+          projectName: ${{ env.BD_PROJECT_NAME }}
+          codeLocationSuffix: "git-repo-scan"
+          releaseTag: ${{ needs.run-params.outputs.bd_github_ref }}
+          blackDuckToken: ${{ secrets.BLACK_DUCK_TOKEN }}
+          tags: ${{ env.BD_TAGS }}
+          isRelease: ${{ needs.run-params.outputs.release_version }}
+          repoName: ${{ needs.run-params.outputs.repo-name }}
+          removeTestFiles: true
+          scanPrefix: 'Base_Signature'
+          devstack-user: ${{ secrets.devstack_user }}
+          devstack-artifactory-token: ${{ secrets.devstack_artifactory_token }}
