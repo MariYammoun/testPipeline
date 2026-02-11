@@ -23,25 +23,35 @@ jobs:
           cache: maven
       - name: build
         run: mvn clean compile
-  security-scan:
+  version:
     needs: compile
+    uses: ./.github/workflows/release-version.yml
+    with:
+      dry_run: true
+    secrets: inherit
+  security-scan:
+    needs: version
     if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/security-scan.yml
     secrets: inherit
 
+  sonar-analysis:
+    if: github.ref == 'refs/heads/main'
+    needs: version
+    uses: ./.github/workflows/sonar-analyze.yml
+    secrets: inherit
+    with:
+      app_version: ${{ needs.version.outputs.new_version }}
+
   semantic-versioning:
-    needs: security-scan
+    needs: [security-scan, sonar-analysis]
     if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/release-version.yml
+    with:
+      dry_run: false
     secrets: inherit
 
-  sonar-analysis:
-      if: github.ref == 'refs/heads/main'
-      needs: [ semantic-versioning ]
-      uses: ./.github/workflows/sonar-analyze.yml
-      secrets: inherit
-      with:
-        app_version: ${{ needs.semantic-versioning.outputs.new_version }}
+
 
   deploy-dev:
     needs: [ semantic-versioning ]
@@ -61,3 +71,8 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
+      - name: Build and Deploy JAR
+        run: |
+            mvn versions:set -DnewVersion=${{ env.APP_VERSION }} -DgenerateBackupPoms=false
+            mvn clean package -DskipTests
+
