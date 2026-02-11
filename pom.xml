@@ -7,7 +7,7 @@
 
     <groupId>com.example</groupId>
     <artifactId>employee-management</artifactId>
-    <version>v1.0.36</version>
+    <version>1.0.38</version>
     <packaging>pom</packaging>
 
     <modules>
