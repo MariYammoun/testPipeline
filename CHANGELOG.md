@@ -1,3 +1,10 @@
+## [1.0.42](https://github.com/MariYammoun/testPipeline/compare/v1.0.41...v1.0.42) (2026-02-11)
+
+
+### Bug Fixes
+
+* fix security scan error ([f3b8e2b](https://github.com/MariYammoun/testPipeline/commit/f3b8e2bd6c305ec2d6e91018708b89bbce44524f))
+
 ## [1.0.41](https://github.com/MariYammoun/testPipeline/compare/v1.0.40...v1.0.41) (2026-02-11)
 
 
