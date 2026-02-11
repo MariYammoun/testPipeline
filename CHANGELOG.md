@@ -1,3 +1,10 @@
+## [1.0.39](https://github.com/MariYammoun/testPipeline/compare/v1.0.38...v1.0.39) (2026-02-11)
+
+
+### Bug Fixes
+
+* fix release error ([2c546ac](https://github.com/MariYammoun/testPipeline/commit/2c546ac163fe2a3e8b5f33485f72bdb2b455fc77))
+
 ## [1.0.38](https://github.com/MariYammoun/testPipeline/compare/v1.0.37...v1.0.38) (2026-02-11)
 
 
