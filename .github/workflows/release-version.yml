@@ -1,0 +1,56 @@
+name: release
+on:
+  workflow_call:
+    inputs:
+      dry_run:
+        required: false
+        type: boolean
+        default: false
+    outputs:
+      new_version:
+        value: ${{ jobs.release.outputs.new_version }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      new_version: ${{ steps.output_version.outputs.VERSION }}
+    steps:
+      - id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.GHAPP_ID }}
+          private-key: ${{ secrets.GHAPP_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.generate_token.outputs.token }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: run release
+        id: semanticRelease
+        run: |
+          npm install
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            npx semantic-release --dry-run > release_log.txt
+            V=$(grep -oP 'Published release \K[0-9]+\.[0-9]+\.[0-9]+' release_log.txt || echo "0.0.0")
+            echo "VERSION=$V" >> $GITHUB_ENV
+          else
+            npx semantic-release
+          fi
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+
+      - name: output version
+        id: output_version
+        run: |
+      
+          if [ "${{ inputs.dry_run }}" = "false" ]; then
+             echo "VERSION=$(git describe --tags --abbrev=0 | sed 's/v//')" >> $GITHUB_OUTPUT
+          else
+             echo "VERSION=${{ env.VERSION }}" >> $GITHUB_OUTPUT
+          fi
